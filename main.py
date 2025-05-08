@@ -2,6 +2,7 @@
 
 import os
 import logging
+from telegram.ext import CommandHandler  # Add this at the top if missing
 from dotenv import load_dotenv
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
@@ -117,8 +118,18 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.callback_query.message.reply_photo(photo=open(file, "rb"))
 
 
+
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "👋 Welcome to CeeFiBot!\n\nUse the menu below to start tracking your finances:",
+        reply_markup=main_menu
+    )
+
+
 # Build and start the bot
 app = ApplicationBuilder().token(TOKEN).build()
+app.add_handler(CommandHandler("start", start))  
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 app.add_handler(CallbackQueryHandler(handle_callback))
 app.run_polling()
